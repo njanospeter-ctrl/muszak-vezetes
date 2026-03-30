@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#1a3a1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="KertészApp"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Kertészeti Műszakvezető</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0d1f0d;
+  --bg2: #111f11;
+  --surface: #162416;
+  --surface2: #1e301e;
+  --surface3: #243424;
+  --border: #2a3f2a;
+  --border2: #3a5a3a;
+  --green: #4caf50;
+  --green2: #66bb6a;
+  --green3: #2e7d32;
+  --accent: #8bc34a;
+  --accent2: #aed581;
+  --gold: #ffd54f;
+  --orange: #ff8f00;
+  --red: #ef5350;
+  --red2: #c62828;
+  --blue: #42a5f5;
+  --purple: #ab47bc;
+  --text: #e8f5e9;
+  --text2: #a5d6a7;
+  --text3: #6a9e6a;
+  --muted: #4a6a4a;
+  --sidebar-w: 260px;
+  --header-h: 64px;
+  --radius: 14px;
+  --radius2: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow2: 0 2px 12px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:16px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* LAYOUT */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:linear-gradient(180deg,#0a1a0a 0%,#0d1f0d 100%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;transition:transform .3s;z-index:100;
+}
+#sidebar-logo{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#sidebar-logo h1{
+  font-family:'Fraunces',serif;font-size:20px;font-weight:600;
+  color:var(--accent);line-height:1.2;
+}
+#sidebar-logo p{font-size:11px;color:var(--text3);margin-top:3px}
+#sidebar-nav{flex:1;overflow-y:auto;padding:10px 0}
+.nav-section{padding:6px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 18px;cursor:pointer;
+  font-size:14px;font-weight:500;color:var(--text3);
+  border-radius:0;transition:all .2s;position:relative;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{background:var(--surface);color:var(--text2)}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(76,175,80,0.15),transparent);
+  color:var(--accent);border-left-color:var(--accent);
+}
+.nav-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;background:var(--red);color:#fff;
+  font-size:10px;font-weight:700;padding:2px 7px;
+  border-radius:10px;min-width:20px;text-align:center;
+}
+#sidebar-footer{
+  padding:14px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.sidebar-action-btn{
+  width:100%;padding:10px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--radius2);
+  color:var(--text2);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:6px;transition:all .2s;font-family:'Outfit',sans-serif;
+}
+.sidebar-action-btn:hover{background:var(--surface3);border-color:var(--border2)}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{
+  height:var(--header-h);min-height:var(--header-h);
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+  flex-shrink:0;
+}
+#topbar-title{font-size:20px;font-weight:700;color:var(--text);flex:1}
+#topbar-subtitle{font-size:13px;color:var(--text3)}
+#content{flex:1;overflow-y:auto;padding:20px 24px}
+
+/* CARDS */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  margin-bottom:16px;box-shadow:var(--shadow2);
+}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.card-title{font-size:16px;font-weight:700;color:var(--text)}
+.card-subtitle{font-size:12px;color:var(--text3);margin-top:2px}
+.card-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.icon-green{background:rgba(76,175,80,0.2)}
+.icon-orange{background:rgba(255,143,0,0.2)}
+.icon-red{background:rgba(239,83,80,0.2)}
+.icon-blue{background:rgba(66,165,245,0.2)}
+.icon-gold{background:rgba(255,213,79,0.2)}
+.icon-purple{background:rgba(171,71,188,0.2)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--radius2);
+  font-size:14px;font-weight:600;cursor:pointer;
+  border:none;transition:all .2s;font-family:'Outfit',sans-serif;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--green3);color:#fff}
+.btn-primary:hover{background:var(--green)}
+.btn-secondary{background:var(--surface3);color:var(--text2);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--surface2)}
+.btn-danger{background:var(--red2);color:#fff}
+.btn-danger:hover{background:var(--red)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-lg{padding:14px 24px;font-size:15px}
+.btn-icon{padding:9px;border-radius:var(--radius2)}
+.btn-full{width:100%;justify-content:center}
+
+/* FORMS */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-control{
+  width:100%;padding:11px 14px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--radius2);
+  color:var(--text);font-size:14px;font-family:'Outfit',sans-serif;
+  transition:border-color .2s;
+}
+.form-control:focus{outline:none;border-color:var(--green);background:var(--surface3)}
+.form-control::placeholder{color:var(--muted)}
+select.form-control option{background:var(--surface2);color:var(--text)}
+textarea.form-control{resize:vertical;min-height:80px}
+.form-check{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0}
+.form-check input[type=checkbox]{
+  width:20px;height:20px;cursor:pointer;
+  accent-color:var(--green);flex-shrink:0;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  padding:10px 14px;text-align:left;
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--text3);background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px}
+tr:hover td{background:var(--surface2)}
+tr:last-child td{border-bottom:none}
+
+/* ALERTS / BADGES */
+.alert{
+  padding:12px 16px;border-radius:var(--radius2);
+  margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;
+  font-size:14px;
+}
+.alert-danger{background:rgba(239,83,80,0.12);border:1px solid rgba(239,83,80,0.3);color:#ef9a9a}
+.alert-warning{background:rgba(255,143,0,0.12);border:1px solid rgba(255,143,0,0.3);color:#ffcc80}
+.alert-info{background:rgba(66,165,245,0.12);border:1px solid rgba(66,165,245,0.3);color:#90caf9}
+.alert-success{background:rgba(76,175,80,0.12);border:1px solid rgba(76,175,80,0.3);color:#a5d6a7}
+.badge{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;
+}
+.badge-green{background:rgba(76,175,80,0.2);color:var(--green2)}
+.badge-orange{background:rgba(255,143,0,0.2);color:#ffb74d}
+.badge-red{background:rgba(239,83,80,0.2);color:#ef9a9a}
+.badge-blue{background:rgba(66,165,245,0.2);color:#90caf9}
+.badge-gray{background:rgba(100,100,100,0.2);color:#aaa}
+.badge-gold{background:rgba(255,213,79,0.2);color:var(--gold)}
+
+/* MODAL */
+#modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:500;display:none;align-items:center;justify-content:center;
+}
+#modal-overlay.open{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:28px;
+  max-width:700px;width:95%;max-height:90vh;
+  overflow-y:auto;box-shadow:var(--shadow);
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-size:18px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px}
+.modal-close:hover{color:var(--text)}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:10px;flex-wrap:wrap}
+.tab{
+  padding:9px 18px;border-radius:8px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--text3);transition:all .2s;
+  white-space:nowrap;
+}
+.tab.active{background:var(--green3);color:#fff}
+.tab:hover:not(.active){background:var(--surface3);color:var(--text2)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* SCORE */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.score-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:12px}
+.score-label{font-size:12px;color:var(--text3);margin-bottom:8px}
+.score-stars{display:flex;gap:4px;flex-wrap:wrap}
+.score-btn{
+  width:36px;height:36px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface3);
+  color:var(--text3);cursor:pointer;font-weight:700;font-size:13px;
+  transition:all .15s;font-family:'Outfit',sans-serif;
+}
+.score-btn.sel{background:var(--green3);color:#fff;border-color:var(--green)}
+.score-btn.na{background:var(--surface3);color:var(--muted);font-size:11px}
+.score-btn.na.sel{background:var(--muted);color:var(--text)}
+
+/* STAT CARDS */
+.stat-card{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 20px;
+}
+.stat-value{font-size:32px;font-weight:800;color:var(--text);line-height:1}
+.stat-label{font-size:12px;color:var(--text3);margin-top:6px;font-weight:500}
+.stat-icon{font-size:28px;margin-bottom:8px}
+.stat-change{font-size:12px;margin-top:6px}
+.stat-up{color:var(--green2)}
+.stat-down{color:var(--red)}
+.stat-same{color:var(--text3)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:50px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty p{font-size:15px}
+
+/* PROGRESS BAR */
+.progress{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:6px}
+.progress-bar{height:100%;border-radius:3px;transition:width .3s}
+.progress-green{background:var(--green)}
+.progress-orange{background:var(--orange)}
+.progress-red{background:var(--red)}
+
+/* DRAG HANDLE */
+.drag-handle{cursor:grab;color:var(--muted);padding:0 4px}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;gap:10px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{
+  position:absolute;inset:0;background:var(--surface3);
+  border-radius:12px;cursor:pointer;transition:.2s;
+  border:1px solid var(--border);
+}
+.toggle-slider:before{
+  content:'';position:absolute;width:16px;height:16px;
+  left:3px;top:3px;background:var(--muted);
+  border-radius:50%;transition:.2s;
+}
+.toggle input:checked + .toggle-slider{background:var(--green3);border-color:var(--green)}
+.toggle input:checked + .toggle-slider:before{transform:translateX(20px);background:#fff}
+
+/* SEARCH */
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius2);padding:10px 14px;
+  margin-bottom:16px;
+}
+.search-bar input{
+  background:none;border:none;outline:none;
+  color:var(--text);font-size:14px;flex:1;
+  font-family:'Outfit',sans-serif;
+}
+.search-bar input::placeholder{color:var(--muted)}
+.search-icon{color:var(--muted);font-size:16px}
+
+/* CHIP */
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;background:var(--surface3);
+  border:1px solid var(--border2);border-radius:20px;
+  font-size:12px;color:var(--text2);
+}
+.chip-remove{cursor:pointer;color:var(--text3)}
+
+/* SECTION DIVIDER */
+.section-title{
+  font-size:13px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--text3);
+  padding:14px 0 8px;border-top:1px solid var(--border);
+  margin-top:8px;display:flex;align-items:center;gap:8px;
+}
+.section-title:first-child{border-top:none;padding-top:0}
+
+/* DASHBOARD WIDGETS */
+.widget-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.widget{
+  flex:1;min-width:180px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  cursor:pointer;transition:all .2s;
+}
+.widget:hover{border-color:var(--border2);transform:translateY(-1px)}
+.widget-count{font-size:36px;font-weight:800;line-height:1}
+.widget-text{font-size:12px;color:var(--text3);margin-top:4px}
+
+/* FLOATING ADD BTN */
+#fab{
+  position:fixed;bottom:28px;right:28px;
+  width:60px;height:60px;border-radius:50%;
+  background:var(--green3);color:#fff;
+  font-size:28px;border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:200;
+}
+#fab:hover{background:var(--green);transform:scale(1.08)}
+
+/* TOAST */
+#toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius2);padding:12px 18px;
+  font-size:13px;min-width:220px;
+  box-shadow:var(--shadow);animation:slideIn .3s ease;
+  display:flex;align-items:center;gap:10px;
+}
+.toast-success{border-left:3px solid var(--green)}
+.toast-error{border-left:3px solid var(--red)}
+.toast-warning{border-left:3px solid var(--orange)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* INLINE EDIT */
+.inline-value{
+  padding:4px 8px;border-radius:4px;cursor:text;
+  transition:background .15s;display:inline-block;
+}
+.inline-value:hover{background:var(--surface3)}
+
+/* INVENTORY +/- */
+.qty-control{display:flex;align-items:center;gap:8px}
+.qty-btn{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--surface3);border:1px solid var(--border);
+  color:var(--text);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;transition:all .15s;
+}
+.qty-btn:hover{background:var(--surface2);border-color:var(--border2)}
+.qty-display{min-width:50px;text-align:center;font-weight:700;font-size:16px}
+
+/* ZONE ROW */
+.zone-row{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius2);padding:12px;margin-bottom:8px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  :root{--sidebar-w:220px}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  :root{--sidebar-w:0px}
+  #sidebar{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);width:260px}
+  #sidebar.open{transform:translateX(0)}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+}
+
+/* PULL-TO-REFRESH INDICATOR */
+#sync-indicator{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:1000;
+  background:linear-gradient(90deg,var(--green3),var(--accent),var(--green3));
+  background-size:200%;animation:shimmer 1.5s infinite;display:none;
+}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+</style>
+</head>
+<body>
+<div id="sync-indicator"></div>
+<div id="toast-container"></div>
+
+<div id="modal-overlay">
+  <div class="modal" id="modal-content">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Modal</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-logo">
+      <h1>🌿 KertészApp</h1>
+      <p id="current-date-display">Betöltés...</p>
+    </div>
+    <nav id="sidebar-nav">
+      <div class="nav-section">Irányítás</div>
+      <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-badge" id="badge-dashboard" style="display:none">0</span>
+      </div>
+      <div class="nav-section">Munkaerő & Helyszín</div>
+      <div class="nav-item" data-page="workers" onclick="navigate('workers')">
+        <span class="nav-icon">👷</span> Dolgozók
+      </div>
+      <div class="nav-item" data-page="gardens" onclick="navigate('gardens')">
+        <span class="nav-icon">🌳</span> Kertek
+      </div>
+      <div class="nav-item" data-page="cars" onclick="navigate('cars')">
+        <span class="nav-icon">🚗</span> Autók
+      </div>
+      <div class="nav-section">Minőségbiztosítás</div>
+      <div class="nav-item" data-page="audits-garden" onclick="navigate('audits-garden')">
+        <span class="nav-icon">📋</span> Kert Auditok
+      </div>
+      <div class="nav-item" data-page="audits-car" onclick="navigate('audits-car')">
+        <span class="nav-icon">🔍</span> Autó Auditok
+      </div>
+      <div class="nav-section">Leltár</div>
+      <div class="nav-item" data-page="machines" onclick="navigate('machines')">
+        <span class="nav-icon">⚙️</span> Gépek
+      </div>
+      <div class="nav-item" data-page="tools" onclick="navigate('tools')">
+        <span class="nav-icon">🔧</span> Eszközök
+      </div>
+      <div class="nav-item" data-page="consumables" onclick="navigate('consumables')">
+        <span class="nav-icon">📦</span> Fogyóeszközök
+      </div>
+      <div class="nav-item" data-page="irrigation-stock" onclick="navigate('irrigation-stock')">
+        <span class="nav-icon">💧</span> Öntözés Készlet
+      </div>
+      <div class="nav-section">Munkaszervezés</div>
+      <div class="nav-item" data-page="worksheets-irrigation" onclick="navigate('worksheets-irrigation')">
+        <span class="nav-icon">🚿</span> Öntözés Munkalap
+      </div>
+      <div class="nav-item" data-page="worksheets-other" onclick="navigate('worksheets-other')">
+        <span class="nav-icon">📝</span> Egyéb Munkalap
+      </div>
+      <div class="nav-item" data-page="tasks" onclick="navigate('tasks')">
+        <span class="nav-icon">✅</span> Feladatok
+        <span class="nav-badge" id="badge-tasks" style="display:none">0</span>
+      </div>
+    </nav>
+    <div id="sidebar-footer">
+      <button class="sidebar-action-btn" onclick="exportData()">💾 Adatok exportálása</button>
+      <button class="sidebar-action-btn" onclick="triggerImport()">📂 Adatok importálása</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <span id="topbar-title">Dashboard</span>
+      <span id="topbar-subtitle"></span>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATABASE
+// ============================================================
+const DB_NAME = 'kerteszet_db';
+const DB_VERSION = 1;
+let db;
+
+const STORES = ['workers','gardens','cars','audit_garden','audit_car','machines','tools','consumables','irrigation_stock','worksheets_irrigation','worksheets_other','tasks','settings'];
+
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      STORES.forEach(s => {
+        if (!d.objectStoreNames.contains(s)) {
+          d.createObjectStore(s, { keyPath: 'id' });
+        }
+      });
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = e => reject(e);
+  });
+}
+
+function dbGet(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = reject;
+  });
+}
+
+function dbPut(store, item) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(item);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = reject;
+  });
+}
+
+function dbDelete(store, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = reject;
+  });
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+// ============================================================
+// APP STATE
+// ============================================================
+const state = {
+  workers: [],
+  gardens: [],
+  cars: [],
+  audit_garden: [],
+  audit_car: [],
+  machines: [],
+  tools: [],
+  consumables: [],
+  irrigation_stock: [],
+  worksheets_irrigation: [],
+  worksheets_other: [],
+  tasks: [],
+  settings: { machineTypes: ['Fűnyíró','Trimmer','Fúvó','Locsolókocsi','Traktor'], machineMarks: ['Honda','Husqvarna','Stihl','Bosch','Kärcher'] }
+};
+
+async function loadAll() {
+  for (const s of STORES) {
+    if (s === 'settings') {
+      const rows = await dbGet(s);
+      if (rows.length > 0) state.settings = rows[0];
+    } else {
+      state[s] = await dbGet(s);
+    }
+  }
+}
+
+async function save(store, item) {
+  if (!item.id) item.id = uid();
+  await dbPut(store, item);
+  state[store] = await dbGet(store);
+  updateBadges();
+}
+
+async function remove(store, id) {
+  await dbDelete(store, id);
+  state[store] = await dbGet(store);
+}
+
+async function saveSettings() {
+  state.settings.id = 'settings';
+  await dbPut('settings', state.settings);
+}
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+async function exportData() {
+  const data = {};
+  for (const s of STORES) data[s] = s === 'settings' ? state.settings : state[s];
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `kerteszet_export_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Adatok exportálva!', 'success');
+}
+
+function triggerImport() { document.getElementById('import-file').click(); }
+
+async function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    for (const s of STORES) {
+      if (!data[s]) continue;
+      if (s === 'settings') {
+        state.settings = data[s];
+        await saveSettings();
+      } else {
+        const arr = Array.isArray(data[s]) ? data[s] : [data[s]];
+        for (const item of arr) await dbPut(s, item);
+        state[s] = await dbGet(s);
+      }
+    }
+    toast('Adatok importálva!', 'success');
+    navigate(currentPage);
+  } catch(err) {
+    toast('Hiba az importálásnál: ' + err.message, 'error');
+  }
+  e.target.value = '';
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+let currentPage = 'dashboard';
+
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  const titles = {
+    dashboard: '📊 Irányító Központ',
+    workers: '👷 Dolgozók',
+    gardens: '🌳 Kertek',
+    cars: '🚗 Autók',
+    'audits-garden': '📋 Kert Auditok',
+    'audits-car': '🔍 Autó Auditok',
+    machines: '⚙️ Gépek',
+    tools: '🔧 Eszközök',
+    consumables: '📦 Fogyóeszközök',
+    'irrigation-stock': '💧 Öntözés Készlet',
+    'worksheets-irrigation': '🚿 Öntözés Munkalap',
+    'worksheets-other': '📝 Egyéb Munkalap',
+    tasks: '✅ Feladatok',
+  };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  document.getElementById('topbar-subtitle').textContent = '';
+  renderPage(page);
+}
+
+function renderPage(page) {
+  const pages = {
+    dashboard: renderDashboard,
+    workers: renderWorkers,
+    gardens: renderGardens,
+    cars: renderCars,
+    'audits-garden': renderAuditsGarden,
+    'audits-car': renderAuditsCar,
+    machines: renderMachines,
+    tools: renderTools,
+    consumables: renderConsumables,
+    'irrigation-stock': renderIrrigationStock,
+    'worksheets-irrigation': renderWorksheetsIrrigation,
+    'worksheets-other': renderWorksheetsOther,
+    tasks: renderTasks,
+  };
+  const fn = pages[page];
+  if (fn) fn();
+}
+
+// ============================================================
+// UTILITY
+// ============================================================
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':type==='error'?'❌':'⚠️'}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+
+function formatDate(d) {
+  if (!d) return '—';
+  const [y,m,dd] = d.split('-');
+  return `${dd}.${m}.${y}`;
+}
+
+function daysDiff(d) {
+  if (!d) return null;
+  return Math.round((new Date(d) - new Date()) / 86400000);
+}
+
+function formatDuration(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}ó ${m.toString().padStart(2,'0')}p`;
+}
+
+function addTime(baseTime, mins) {
+  if (!baseTime || !mins) return '—';
+  const [h, m] = baseTime.split(':').map(Number);
+  const total = h * 60 + m + Number(mins);
+  const rh = Math.floor(total / 60) % 24;
+  const rm = total % 60;
+  return `${rh.toString().padStart(2,'0')}:${rm.toString().padStart(2,'0')}`;
+}
+
+function C(tag, attrs={}, ...children) {
+  const el = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v]) => {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  });
+  children.flat().forEach(c => {
+    if (c == null) return;
+    el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return el;
+}
+
+function set(id) { return document.getElementById(id); }
+
+function getVal(id) {
+  const el = set(id);
+  if (!el) return '';
+  if (el.type === 'checkbox') return el.checked;
+  return el.value;
+}
+
+function openModal(title, bodyHTML, wide=false) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHTML;
+  document.getElementById('modal-overlay').classList.add('open');
+  if (wide) document.querySelector('.modal').style.maxWidth = '900px';
+  else document.querySelector('.modal').style.maxWidth = '700px';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function getAlerts() {
+  const alerts = [];
+  const now = new Date();
+
+  // Workers clothing
+  state.workers.forEach(w => {
+    if (w.lastClothing) {
+      const d = daysDiff(w.lastClothing) * -1;
+      if (d >= 365) alerts.push({ type:'warning', icon:'👕', text:`${w.name} ruhakiadás esedékes (${Math.round(d/365*10)/10} éve)`, page:'workers' });
+    }
+  });
+
+  // Cars
+  state.cars.forEach(c => {
+    if (c.techExpiry) {
+      const d = daysDiff(c.techExpiry);
+      if (d <= 30) alerts.push({ type:'danger', icon:'🔧', text:`${c.name} műszaki lejár: ${formatDate(c.techExpiry)} (${d} nap)`, page:'cars' });
+    }
+    if (c.oilKm && c.currentKm && (Number(c.oilKm) - Number(c.currentKm) < 1000)) {
+      alerts.push({ type:'warning', icon:'🛢️', text:`${c.name} olajcsere szükséges (<1000 km)`, page:'cars' });
+    }
+    const m = now.getMonth();
+    if (c.tireType === 'nyari' && (m >= 10 || m <= 2)) {
+      alerts.push({ type:'warning', icon:'🔴', text:`${c.name} nyári gumi télen!`, page:'cars' });
+    }
+    if (c.tireType === 'teli' && m >= 4 && m <= 9) {
+      alerts.push({ type:'warning', icon:'🔵', text:`${c.name} téli gumi nyáron!`, page:'cars' });
+    }
+    if (c.needsService) alerts.push({ type:'info', icon:'🔩', text:`${c.name} szervizre vár`, page:'cars' });
+  });
+
+  // Gardens - broken zones
+  state.gardens.forEach(g => {
+    if (!g.irrigation) return;
+    const broken = (g.irrigation.zones||[]).filter(z => z.broken);
+    if (broken.length) alerts.push({ type:'danger', icon:'💧', text:`${g.name}: ${broken.length} hibás öntözőzóna (${broken.map(z=>z.name).join(', ')})`, page:'gardens' });
+  });
+
+  // Audits
+  state.audit_garden.forEach(a => {
+    const scores = [a.grass,a.shrubs,a.trees,a.flowers,a.pavement,a.irrigation,a.image].filter(v => v && v !== 'na').map(Number);
+    if (scores.length) {
+      const avg = scores.reduce((a,b)=>a+b,0)/scores.length;
+      if (avg < 3) alerts.push({ type:'danger', icon:'⚠️', text:`Audit: ${getGardenName(a.gardenId)} — átlag: ${avg.toFixed(1)} pont`, page:'audits-garden' });
+    }
+  });
+
+  // Tasks
+  state.tasks.forEach(t => {
+    if (!t.deadline) return;
+    const d = daysDiff(t.deadline);
+    if (d < 0) alerts.push({ type:'danger', icon:'⏰', text:`Lejárt feladat: ${t.name} (${Math.abs(d)} napja)`, page:'tasks' });
+    else if (d === 0) alerts.push({ type:'warning', icon:'🔔', text:`Ma esedékes: ${t.name}`, page:'tasks' });
+  });
+
+  // Consumables
+  state.consumables.forEach(c => {
+    if (c.qty < 0) alerts.push({ type:'danger', icon:'📦', text:`Negatív készlet: ${c.name} (${c.qty})`, page:'consumables' });
+    else if (c.qty <= c.min) alerts.push({ type:'warning', icon:'📦', text:`Minimális készlet: ${c.name} (${c.qty}/${c.min})`, page:'consumables' });
+  });
+
+  // Irrigation stock
+  state.irrigation_stock.forEach(s => {
+    if (s.qty <= s.min) alerts.push({ type:'warning', icon:'💧', text:`Öntözés készlet alacsony: ${s.name} (${s.qty}/${s.min})`, page:'irrigation-stock' });
+  });
+
+  // Machines broken
+  state.machines.forEach(m => {
+    if (m.broken) alerts.push({ type:'warning', icon:'⚙️', text:`Hibás gép: ${m.name} (${m.location||'—'})`, page:'machines' });
+  });
+
+  return alerts;
+}
+
+function updateBadges() {
+  const alerts = getAlerts();
+  const danger = alerts.filter(a => a.type === 'danger').length;
+  const db = set('badge-dashboard');
+  if (db) { db.textContent = alerts.length; db.style.display = alerts.length ? '' : 'none'; }
+
+  // Tasks overdue
+  const overdue = state.tasks.filter(t => t.deadline && daysDiff(t.deadline) < 0).length;
+  const tb = set('badge-tasks');
+  if (tb) { tb.textContent = overdue; tb.style.display = overdue ? '' : 'none'; }
+}
+
+function renderDashboard() {
+  const alerts = getAlerts();
+  const content = set('content');
+
+  // Stats row
+  const overdueTasks = state.tasks.filter(t => t.deadline && daysDiff(t.deadline) < 0).length;
+  const todayTasks = state.tasks.filter(t => t.deadline && daysDiff(t.deadline) === 0).length;
+  const brokenZones = state.gardens.reduce((n, g) => n + ((g.irrigation?.zones||[]).filter(z=>z.broken).length), 0);
+  const lowStock = state.consumables.filter(c => c.qty <= c.min).length;
+
+  // Shopping lists
+  const generalShopping = state.consumables.filter(c => c.qty <= c.min);
+  const irrigShopping = state.irrigation_stock.filter(s => s.qty <= s.min);
+
+  // Bring lists from audits
+  const bringItems = [];
+  state.audit_garden.forEach(a => {
+    (a.bringItems||[]).filter(b=>!b.done).forEach(b => bringItems.push({garden:getGardenName(a.gardenId), item:b.text}));
+  });
+
+  // Weekly tasks
+  const weekTasks = state.tasks.filter(t => {
+    if (!t.deadline) return false;
+    const d = daysDiff(t.deadline);
+    return d >= 0 && d <= 7;
+  });
+
+  let html = `
+  <div class="widget-row">
+    <div class="widget" onclick="navigate('tasks')" style="border-left:3px solid var(--red)">
+      <div class="widget-count" style="color:var(--red)">${overdueTasks}</div>
+      <div class="widget-text">⏰ Lejárt feladat</div>
+    </div>
+    <div class="widget" onclick="navigate('tasks')" style="border-left:3px solid var(--orange)">
+      <div class="widget-count" style="color:var(--orange)">${todayTasks}</div>
+      <div class="widget-text">🔔 Mai feladat</div>
+    </div>
+    <div class="widget" onclick="navigate('gardens')" style="border-left:3px solid var(--red)">
+      <div class="widget-count" style="color:var(--red)">${brokenZones}</div>
+      <div class="widget-text">💧 Hibás zóna</div>
+    </div>
+    <div class="widget" onclick="navigate('consumables')" style="border-left:3px solid var(--orange)">
+      <div class="widget-count" style="color:var(--orange)">${lowStock}</div>
+      <div class="widget-text">📦 Alacsony készlet</div>
+    </div>
+    <div class="widget" onclick="navigate('workers')" style="border-left:3px solid var(--green)">
+      <div class="widget-count" style="color:var(--green)">${state.workers.length}</div>
+      <div class="widget-text">👷 Dolgozó</div>
+    </div>
+    <div class="widget" onclick="navigate('gardens')" style="border-left:3px solid var(--green)">
+      <div class="widget-count" style="color:var(--green)">${state.gardens.length}</div>
+      <div class="widget-text">🌳 Kert</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-red">🚨</div>
+          <div><div class="card-title">Figyelmeztetések</div><div class="card-subtitle">${alerts.length} aktív</div></div>
+        </div>
+        ${alerts.length === 0 ? '<div class="alert alert-success">✅ Minden rendben!</div>' :
+          alerts.map(a => `<div class="alert alert-${a.type}" style="cursor:pointer" onclick="navigate('${a.page}')">
+            <span>${a.icon}</span>
+            <div>${a.text}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-gold">📋</div>
+          <div><div class="card-title">Heti feladatok</div></div>
+        </div>
+        ${weekTasks.length === 0 ? '<p style="color:var(--text3)">Nincs feladat a héten.</p>' :
+          weekTasks.map(t => {
+            const d = daysDiff(t.deadline);
+            const cls = d <= 0 ? 'red' : d <= 3 ? 'orange' : 'green';
+            return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+              <span class="badge badge-${cls}">${d===0?'Ma':d<0?`${Math.abs(d)}n késve`:`${d} nap`}</span>
+              <span>${t.name}</span>
+              <span style="color:var(--text3);font-size:12px;margin-left:auto">${t.location||''}</span>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-orange">🛒</div>
+          <div><div class="card-title">Bevásárló lista</div><div class="card-subtitle">Általános készlet</div></div>
+        </div>
+        ${generalShopping.length === 0 ? '<p style="color:var(--text3)">Minden feltöltve ✅</p>' :
+          `<table><thead><tr><th>Termék</th><th>Készlet</th><th>Min.</th></tr></thead><tbody>` +
+          generalShopping.map(c => `<tr><td>${c.name}</td><td style="color:var(--red)">${c.qty}</td><td>${c.min}</td></tr>`).join('') +
+          `</tbody></table>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-blue">💧</div>
+          <div><div class="card-title">Öntözés Bevásárló</div></div>
+        </div>
+        ${irrigShopping.length === 0 ? '<p style="color:var(--text3)">Minden feltöltve ✅</p>' :
+          `<table><thead><tr><th>Anyag</th><th>Készlet</th><th>Min.</th></tr></thead><tbody>` +
+          irrigShopping.map(s => `<tr><td>${s.name}</td><td style="color:var(--red)">${s.qty} ${s.unit||''}</td><td>${s.min}</td></tr>`).join('') +
+          `</tbody></table>`}
+      </div>
+
+      ${bringItems.length > 0 ? `<div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-purple">📦</div>
+          <div><div class="card-title">Hozni kell (auditokból)</div></div>
+        </div>
+        ${bringItems.map(b => `<div style="padding:7px 0;border-bottom:1px solid var(--border);display:flex;gap:10px">
+          <span style="color:var(--text3)">${b.garden}</span>
+          <span>→ ${b.item}</span>
+        </div>`).join('')}
+      </div>` : ''}
+    </div>
+  </div>`;
+
+  content.innerHTML = html;
+}
+
+// ============================================================
+// WORKERS
+// ============================================================
+function renderWorkers() {
+  const content = set('content');
+  const workers = state.workers;
+
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openWorkerModal()">+ Új dolgozó</button>
+  ${workers.length === 0 ? '<div class="empty"><div class="empty-icon">👷</div><p>Nincsenek dolgozók</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Név</th><th>Telefon</th><th>Jogosítvány</th><th>Ruhakiadás</th><th>Auditok</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${workers.map(w => {
+      const audits = state.audit_garden.filter(a => (a.workers||[]).includes(w.id)).length +
+                     state.audit_car.filter(a => (a.workers||[]).includes(w.id)).length;
+      const clothWarn = w.lastClothing && (daysDiff(w.lastClothing)*-1 >= 365);
+      return `<tr>
+        <td><strong>${w.name}</strong></td>
+        <td>${w.phone||'—'}</td>
+        <td>${w.license ? '✅ Van' : '—'}</td>
+        <td>${w.lastClothing ? `<span style="color:${clothWarn?'var(--red)':'var(--green2)'}">${formatDate(w.lastClothing)}${clothWarn?' ⚠️':''}</span>` : '—'}</td>
+        <td><span class="badge badge-blue">${audits}</span></td>
+        <td><button class="btn btn-sm btn-secondary" onclick="openWorkerModal('${w.id}')">✏️</button>
+            <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteWorker('${w.id}')">🗑️</button></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div></div>`}`;
+
+  content.innerHTML = html;
+}
+
+function openWorkerModal(id) {
+  const w = id ? state.workers.find(x=>x.id===id) : {};
+  const isNew = !id;
+  openModal(isNew ? 'Új dolgozó' : 'Dolgozó szerkesztése', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Név *</label>
+        <input class="form-control" id="w-name" value="${w.name||''}" placeholder="Teljes név"/></div>
+      <div class="form-group"><label class="form-label">Telefonszám</label>
+        <input class="form-control" id="w-phone" value="${w.phone||''}" placeholder="+36 XX XXX XXXX"/></div>
+    </div>
+    <div class="section-title">👕 Ruhaméretek</div>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Nadrág</label>
+        <input class="form-control" id="w-pants" value="${w.pants||''}" placeholder="pl. 52"/></div>
+      <div class="form-group"><label class="form-label">Póló</label>
+        <input class="form-control" id="w-shirt" value="${w.shirt||''}" placeholder="pl. XL"/></div>
+      <div class="form-group"><label class="form-label">Cipő</label>
+        <input class="form-control" id="w-shoe" value="${w.shoe||''}" placeholder="pl. 43"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Kesztyű méret</label>
+      <input class="form-control" id="w-glove" value="${w.glove||''}" placeholder="pl. 9"/></div>
+    <label class="form-check"><input type="checkbox" id="w-license" ${w.license?'checked':''}/> Jogosítvány</label>
+    <div class="section-title">👕 Utolsó ruhakiadás</div>
+    <div class="form-group"><label class="form-label">Dátum</label>
+      <input class="form-control" type="date" id="w-clothing" value="${w.lastClothing||''}"/></div>
+    <div class="form-group"><label class="form-label">Mit kapott</label>
+      <textarea class="form-control" id="w-clothing-items" placeholder="pl. nadrág, póló, cipő...">${w.clothingItems||''}</textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveWorker('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveWorker(id) {
+  const name = getVal('w-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const w = { id: id||uid(), name, phone:getVal('w-phone'), pants:getVal('w-pants'), shirt:getVal('w-shirt'), shoe:getVal('w-shoe'), glove:getVal('w-glove'), license:getVal('w-license'), lastClothing:getVal('w-clothing'), clothingItems:getVal('w-clothing-items') };
+  await save('workers', w);
+  closeModal();
+  toast('Dolgozó mentve!');
+  renderWorkers();
+}
+
+async function deleteWorker(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('workers', id);
+  toast('Törölve!');
+  renderWorkers();
+}
+
+function getWorkerName(id) { const w = state.workers.find(x=>x.id===id); return w?w.name:'—'; }
+
+// ============================================================
+// GARDENS
+// ============================================================
+function renderGardens() {
+  const content = set('content');
+  const gardens = state.gardens;
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openGardenModal()">+ Új kert</button>
+  ${gardens.length === 0 ? '<div class="empty"><div class="empty-icon">🌳</div><p>Nincsenek kertek</p></div>' :
+  gardens.map(g => {
+    const broken = (g.irrigation?.zones||[]).filter(z=>z.broken);
+    const totalMins = (g.irrigation?.zones||[]).reduce((s,z)=>s+Number(z.duration||0),0);
+    const lastAudit = [...state.audit_garden].filter(a=>a.gardenId===g.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
+    return `<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">🌳</span>
+            <div>
+              <div style="font-size:16px;font-weight:700">${g.name}</div>
+              <div style="font-size:13px;color:var(--text3)">${g.address||''}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            ${g.workers&&g.workers.length?g.workers.map(id=>`<span class="chip">👷 ${getWorkerName(id)}</span>`).join(''):''}
+            ${broken.length?`<span class="badge badge-red">⚠️ ${broken.length} hibás zóna</span>`:''}
+            ${lastAudit?`<span class="badge badge-blue">📋 Utolsó audit: ${formatDate(lastAudit.date)}</span>`:''}
+          </div>
+          <div style="font-size:13px;color:var(--text3)">
+            ${g.contact?`👤 ${g.contact}`:''} ${g.phone?`📞 ${g.phone}`:''}
+          </div>
+          ${g.irrigation?`<div style="margin-top:10px;font-size:13px;color:var(--text3)">
+            💧 ${(g.irrigation.zones||[]).length} zóna • ⏱️ ${formatDuration(totalMins)} összesen
+            • Vége: ${addTime(g.irrigation.startTime, totalMins)}
+          </div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-sm btn-secondary" onclick="openGardenModal('${g.id}')">✏️ Szerkesztés</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteGarden('${g.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}`;
+  content.innerHTML = html;
+}
+
+function openGardenModal(id) {
+  const g = id ? state.gardens.find(x=>x.id===id) : { workers:[], irrigation:{ zones:[] } };
+  if (!g.irrigation) g.irrigation = { zones: [] };
+  if (!g.workers) g.workers = [];
+  const workerOpts = state.workers.map(w => `<option value="${w.id}" ${g.workers.includes(w.id)?'selected':''}>${w.name}</option>`).join('');
+  const zones = g.irrigation.zones || [];
+
+  openModal(id ? 'Kert szerkesztése' : 'Új kert', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kert neve *</label>
+        <input class="form-control" id="g-name" value="${g.name||''}" placeholder="Kert neve"/></div>
+      <div class="form-group"><label class="form-label">Cím</label>
+        <input class="form-control" id="g-address" value="${g.address||''}" placeholder="Cím"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kapcsolattartó</label>
+        <input class="form-control" id="g-contact" value="${g.contact||''}" placeholder="Név"/></div>
+      <div class="form-group"><label class="form-label">Telefon</label>
+        <input class="form-control" id="g-phone" value="${g.phone||''}" placeholder="+36..."/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Hozzárendelt dolgozók</label>
+      <select class="form-control" id="g-workers" multiple style="height:100px">${workerOpts}</select>
+    </div>
+    <div class="section-title">💧 Öntözőrendszer</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Vezérlő típus</label>
+        <input class="form-control" id="g-irr-type" value="${g.irrigation.controllerType||''}" placeholder="pl. Hunter Pro-C"/></div>
+      <div class="form-group"><label class="form-label">Indulási idő</label>
+        <input class="form-control" type="time" id="g-irr-start" value="${g.irrigation.startTime||''}"/></div>
+    </div>
+    <div class="section-title" style="margin-bottom:10px">🔁 Zónák <button class="btn btn-sm btn-secondary" onclick="addZoneRow()" style="margin-left:10px">+ Zóna</button></div>
+    <div id="zones-container">
+      ${zones.map((z,i) => zoneRowHTML(z,i)).join('')}
+    </div>
+    <div id="zone-total" style="margin-top:10px;font-size:13px;color:var(--text3)"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveGarden('${id||''}')">💾 Mentés</button>
+    </div>
+  `, true);
+  calcZoneTotal();
+}
+
+let zoneCount = 0;
+function zoneRowHTML(z={}, i) {
+  zoneCount++;
+  const types = ['szóró','csepegtető','permetező','buborék','forgó'];
+  return `<div class="zone-row" id="zone-row-${i}">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input class="form-control" style="flex:2" placeholder="Zóna neve" value="${z.name||''}" data-z="${i}" data-f="name" oninput="calcZoneTotal()"/>
+      <input class="form-control" style="width:70px" type="number" placeholder="Szám" value="${z.num||''}" data-z="${i}" data-f="num"/>
+      <select class="form-control" style="flex:1" data-z="${i}" data-f="type">
+        ${types.map(t=>`<option ${z.type===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+      <button class="btn btn-sm btn-danger" onclick="removeZone(${i})">✕</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="flex:1"><label class="form-label" style="margin:0">Idő (perc)</label>
+        <input class="form-control" type="number" value="${z.duration||''}" data-z="${i}" data-f="duration" oninput="calcZoneTotal()"/></div>
+      <div style="flex:2"><label class="form-label" style="margin:0">Megjegyzés</label>
+        <input class="form-control" value="${z.note||''}" data-z="${i}" data-f="note"/></div>
+      <div style="padding-top:16px"><label class="form-check"><input type="checkbox" data-z="${i}" data-f="broken" ${z.broken?'checked':''}> Hibás</label></div>
+    </div>
+  </div>`;
+}
+
+function addZoneRow() {
+  const c = set('zones-container');
+  const div = document.createElement('div');
+  div.innerHTML = zoneRowHTML({}, zoneCount);
+  c.appendChild(div.firstElementChild);
+  calcZoneTotal();
+}
+
+function removeZone(i) {
+  const el = document.getElementById(`zone-row-${i}`);
+  if (el) el.remove();
+  calcZoneTotal();
+}
+
+function calcZoneTotal() {
+  const rows = document.querySelectorAll('[data-f="duration"]');
+  let total = 0;
+  rows.forEach(r => total += Number(r.value||0));
+  const el = set('zone-total');
+  if (el) {
+    const start = set('g-irr-start')?.value;
+    el.textContent = `Összidő: ${formatDuration(total)}${start?' • Vége: '+addTime(start,total):''}`;
+  }
+}
+
+function collectZones() {
+  const zones = [];
+  const rows = document.querySelectorAll('.zone-row');
+  rows.forEach(row => {
+    const get = f => {
+      const el = row.querySelector(`[data-f="${f}"]`);
+      if (!el) return '';
+      if (el.type==='checkbox') return el.checked;
+      return el.value;
+    };
+    zones.push({ name:get('name'), num:get('num'), type:get('type'), duration:get('duration'), note:get('note'), broken:get('broken') });
+  });
+  return zones;
+}
+
+async function saveGarden(id) {
+  const name = getVal('g-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const sel = set('g-workers');
+  const workers = sel ? Array.from(sel.selectedOptions).map(o=>o.value) : [];
+  const g = {
+    id: id||uid(), name, address:getVal('g-address'), contact:getVal('g-contact'), phone:getVal('g-phone'), workers,
+    irrigation: { controllerType:getVal('g-irr-type'), startTime:getVal('g-irr-start'), zones:collectZones() }
+  };
+  await save('gardens', g);
+  closeModal();
+  toast('Kert mentve!');
+  renderGardens();
+}
+
+async function deleteGarden(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('gardens', id);
+  toast('Törölve!');
+  renderGardens();
+}
+
+function getGardenName(id) { const g = state.gardens.find(x=>x.id===id); return g?g.name:'—'; }
+
+// ============================================================
+// CARS
+// ============================================================
+function renderCars() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openCarModal()">+ Új autó</button>
+  ${state.cars.length === 0 ? '<div class="empty"><div class="empty-icon">🚗</div><p>Nincsenek autók</p></div>' :
+  `<div class="grid-2">${state.cars.map(c => {
+    const techD = c.techExpiry ? daysDiff(c.techExpiry) : null;
+    const oilLeft = c.oilKm && c.currentKm ? Number(c.oilKm) - Number(c.currentKm) : null;
+    const now = new Date().getMonth();
+    const tireWarn = (c.tireType==='nyari'&&(now>=10||now<=2)) || (c.tireType==='teli'&&now>=4&&now<=9);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:4px">🚗 ${c.name}</div>
+          <div style="font-size:13px;color:var(--text3);margin-bottom:12px">${c.plate||''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-secondary" onclick="openCarModal('${c.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteCar('${c.id}')">🗑️</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text3)">Műszaki:</span>
+          <span style="color:${techD!==null&&techD<=30?'var(--red)':techD!==null&&techD<=60?'var(--orange)':'var(--text2)'}">${formatDate(c.techExpiry)} ${techD!==null?`(${techD} nap)`:''}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text3)">Olajcsere km:</span>
+          <span style="color:${oilLeft!==null&&oilLeft<1000?'var(--red)':'var(--text2)'}">${c.oilKm||'—'} km ${oilLeft!==null?`(marad: ${oilLeft} km)`:''}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text3)">Gumi:</span>
+          <span style="color:${tireWarn?'var(--red)':'var(--text2)'}">${c.tireType==='nyari'?'☀️ Nyári':c.tireType==='teli'?'❄️ Téli':c.tireType==='4season'?'🔄 4 évszakos':'—'}${tireWarn?' ⚠️':''}</span>
+        </div>
+        ${c.needsService?`<div class="badge badge-orange">🔩 Szervizre vár</div>`:''}
+      </div>
+    </div>`;
+  }).join('')}</div>`}`;
+  content.innerHTML = html;
+}
+
+function openCarModal(id) {
+  const c = id ? state.cars.find(x=>x.id===id) : {};
+  openModal(id ? 'Autó szerkesztése' : 'Új autó', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Megnevezés *</label>
+        <input class="form-control" id="c-name" value="${c.name||''}" placeholder="pl. Ford Transit"/></div>
+      <div class="form-group"><label class="form-label">Rendszám</label>
+        <input class="form-control" id="c-plate" value="${c.plate||''}" placeholder="ABC-123"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Műszaki lejárat</label>
+        <input class="form-control" type="date" id="c-tech" value="${c.techExpiry||''}"/></div>
+      <div class="form-group"><label class="form-label">Jelenlegi km állás</label>
+        <input class="form-control" type="number" id="c-km" value="${c.currentKm||''}" placeholder="km"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Olajcsere km-ig</label>
+        <input class="form-control" type="number" id="c-oilkm" value="${c.oilKm||''}" placeholder="km"/></div>
+      <div class="form-group"><label class="form-label">Gumi típus</label>
+        <select class="form-control" id="c-tire">
+          <option value="">—</option>
+          <option value="nyari" ${c.tireType==='nyari'?'selected':''}>☀️ Nyári</option>
+          <option value="teli" ${c.tireType==='teli'?'selected':''}>❄️ Téli</option>
+          <option value="4season" ${c.tireType==='4season'?'selected':''}>🔄 Négyévszakos</option>
+        </select></div>
+    </div>
+    <label class="form-check"><input type="checkbox" id="c-service" ${c.needsService?'checked':''}> Szervizre vár</label>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveCar('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveCar(id) {
+  const name = getVal('c-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const c = { id:id||uid(), name, plate:getVal('c-plate'), techExpiry:getVal('c-tech'), currentKm:getVal('c-km'), oilKm:getVal('c-oilkm'), tireType:getVal('c-tire'), needsService:getVal('c-service') };
+  await save('cars', c);
+  closeModal(); toast('Autó mentve!'); renderCars();
+}
+
+async function deleteCar(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('cars', id); toast('Törölve!'); renderCars();
+}
+
+// ============================================================
+// AUDIT - GARDENS
+// ============================================================
+const AUDIT_CATS = [
+  { key:'grass', label:'🌿 Füves terület' },
+  { key:'shrubs', label:'🌳 Cserjék' },
+  { key:'trees', label:'🌲 Fák' },
+  { key:'flowers', label:'🌸 Virágágyások' },
+  { key:'pavement', label:'🧱 Burkolatok' },
+  { key:'irrigation', label:'💧 Öntözés' },
+  { key:'image', label:'✨ Arculat' },
+];
+
+function renderAuditsGarden() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openGardenAuditModal()">+ Új audit</button>
+  ${state.audit_garden.length === 0 ? '<div class="empty"><div class="empty-icon">📋</div><p>Nincsenek auditok</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Dátum</th><th>Kert</th><th>Átlag</th><th>Fenntartó</th><th>Hibák</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${[...state.audit_garden].sort((a,b)=>b.date.localeCompare(a.date)).map(a => {
+      const scores = AUDIT_CATS.map(c=>a[c.key]).filter(v=>v&&v!=='na').map(Number);
+      const avg = scores.length ? (scores.reduce((s,v)=>s+v,0)/scores.length).toFixed(1) : '—';
+      const cl = avg<3?'red':avg<4?'orange':'green';
+      const brings = (a.bringItems||[]).filter(b=>!b.done).length;
+      return `<tr>
+        <td>${formatDate(a.date)}</td>
+        <td>${getGardenName(a.gardenId)}</td>
+        <td><span class="badge badge-${cl}">${avg}</span></td>
+        <td>${a.maintainerPresent?'✅':'—'}</td>
+        <td>${brings?`<span class="badge badge-orange">📦 ${brings}</span>`:'—'}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="openGardenAuditModal('${a.id}')">✏️</button>
+          <button class="btn btn-sm btn-secondary" style="margin-left:4px" onclick="printAudit('${a.id}')">🖨️</button>
+          <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteAuditGarden('${a.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openGardenAuditModal(id) {
+  const a = id ? state.audit_garden.find(x=>x.id===id) : { date:today(), bringItems:[] };
+  if (!a.bringItems) a.bringItems = [];
+  const gardenOpts = state.gardens.map(g=>`<option value="${g.id}" ${a.gardenId===g.id?'selected':''}>${g.name}</option>`).join('');
+  const workerOpts = state.workers.map(w=>`<option value="${w.id}" ${(a.workers||[]).includes(w.id)?'selected':''}>${w.name}</option>`).join('');
+
+  function scoreHTML(key, val) {
+    const btns = [1,2,3,4,5].map(n=>`<button class="score-btn ${val==n?'sel':''}" onclick="setScore('${key}',${n})">${n}</button>`).join('');
+    return btns + `<button class="score-btn na ${val==='na'?'sel':''}" onclick="setScore('${key}','na')">N/A</button>`;
+  }
+
+  openModal(id?'Audit szerkesztése':'Új kert audit', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kert *</label>
+        <select class="form-control" id="ag-garden">${gardenOpts}</select></div>
+      <div class="form-group"><label class="form-label">Dátum</label>
+        <input class="form-control" type="date" id="ag-date" value="${a.date||today()}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Dolgozók (jelenléti)</label>
+      <select class="form-control" id="ag-workers" multiple style="height:90px">${workerOpts}</select></div>
+    <label class="form-check"><input type="checkbox" id="ag-maintainer" ${a.maintainerPresent?'checked':''}/> Fenntartó jelen volt</label>
+    <div class="section-title">📊 Pontozás (1–5 vagy N/A)</div>
+    <div class="score-grid" id="score-grid">
+      ${AUDIT_CATS.map(c=>`<div class="score-item">
+        <div class="score-label">${c.label}</div>
+        <div class="score-stars" id="score-${c.key}">${scoreHTML(c.key, a[c.key])}</div>
+      </div>`).join('')}
+    </div>
+    <div id="audit-avg-display" style="margin-top:10px;font-size:14px;color:var(--text2)"></div>
+    <div class="form-group" style="margin-top:14px"><label class="form-label">Megjegyzés</label>
+      <textarea class="form-control" id="ag-note">${a.note||''}</textarea></div>
+    <div class="section-title">📦 Hozni kell <button class="btn btn-sm btn-secondary" style="margin-left:10px" onclick="addBringItem()">+ Tétel</button></div>
+    <div id="bring-list">
+      ${a.bringItems.map((b,i)=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        <input type="checkbox" ${b.done?'checked':''} onchange="bringToggle(${i})"/>
+        <input class="form-control" value="${b.text||''}" oninput="bringEdit(${i},this.value)" placeholder="Tétel neve"/>
+        <input class="form-control" style="flex:2" value="${b.note||''}" oninput="bringNote(${i},this.value)" placeholder="Megjegyzés"/>
+        <button class="btn btn-sm btn-danger" onclick="removeBring(${i})">✕</button>
+      </div>`).join('')}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveGardenAudit('${id||''}')">💾 Mentés</button>
+    </div>
+  `, true);
+
+  // Store bring items in temp
+  window._bringItems = JSON.parse(JSON.stringify(a.bringItems));
+  window._auditScores = {};
+  AUDIT_CATS.forEach(c => { window._auditScores[c.key] = a[c.key]||''; });
+  updateAuditAvg();
+}
+
+function setScore(key, val) {
+  window._auditScores[key] = val;
+  const container = document.getElementById(`score-${key}`);
+  if (container) {
+    container.querySelectorAll('.score-btn').forEach(b => {
+      b.classList.toggle('sel', String(b.textContent)===String(val)||(b.classList.contains('na')&&val==='na'));
+    });
+  }
+  updateAuditAvg();
+}
+
+function updateAuditAvg() {
+  const scores = Object.values(window._auditScores||{}).filter(v=>v&&v!=='na').map(Number);
+  const avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2) : '—';
+  const el = set('audit-avg-display');
+  if (el) el.textContent = `📊 Átlag: ${avg} pont`;
+}
+
+function addBringItem() {
+  window._bringItems.push({ text:'', note:'', done:false });
+  const i = window._bringItems.length - 1;
+  const list = set('bring-list');
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:6px';
+  div.innerHTML = `<input type="checkbox" onchange="bringToggle(${i})"/>
+    <input class="form-control" oninput="bringEdit(${i},this.value)" placeholder="Tétel neve"/>
+    <input class="form-control" style="flex:2" oninput="bringNote(${i},this.value)" placeholder="Megjegyzés"/>
+    <button class="btn btn-sm btn-danger" onclick="removeBring(${i})">✕</button>`;
+  list.appendChild(div);
+}
+
+function bringEdit(i, v) { if (window._bringItems[i]) window._bringItems[i].text = v; }
+function bringNote(i, v) { if (window._bringItems[i]) window._bringItems[i].note = v; }
+function bringToggle(i) { if (window._bringItems[i]) window._bringItems[i].done = !window._bringItems[i].done; }
+function removeBring(i) { window._bringItems.splice(i,1); }
+
+async function saveGardenAudit(id) {
+  const gardenId = getVal('ag-garden');
+  if (!gardenId) { toast('Válassz kertet!', 'error'); return; }
+  const sel = set('ag-workers');
+  const workers = sel ? Array.from(sel.selectedOptions).map(o=>o.value) : [];
+  const a = {
+    id: id||uid(),
+    gardenId, date:getVal('ag-date'), workers,
+    maintainerPresent: getVal('ag-maintainer'),
+    note: getVal('ag-note'),
+    bringItems: window._bringItems || [],
+    ...(window._auditScores||{})
+  };
+  await save('audit_garden', a);
+  closeModal(); toast('Audit mentve!'); renderAuditsGarden();
+}
+
+async function deleteAuditGarden(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('audit_garden', id); toast('Törölve!'); renderAuditsGarden();
+}
+
+function printAudit(id) {
+  const a = state.audit_garden.find(x=>x.id===id);
+  if (!a) return;
+  const scores = AUDIT_CATS.map(c=>a[c.key]).filter(v=>v&&v!=='na').map(Number);
+  const avg = scores.length ? (scores.reduce((s,v)=>s+v,0)/scores.length).toFixed(2) : '—';
+  const catScores = AUDIT_CATS.map(c=>`<tr><td>${c.label}</td><td>${a[c.key]||'—'}</td></tr>`).join('');
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Audit</title>
+  <style>body{font-family:sans-serif;padding:24px;color:#111}h1{color:#2e7d32}table{border-collapse:collapse;width:100%}
+  th,td{border:1px solid #ccc;padding:8px 12px}th{background:#e8f5e9}</style></head><body>
+  <h1>Kert Audit – ${getGardenName(a.gardenId)}</h1>
+  <p>Dátum: <strong>${formatDate(a.date)}</strong> | Fenntartó: ${a.maintainerPresent?'Jelen volt':'Nem volt jelen'}</p>
+  <table><thead><tr><th>Kategória</th><th>Pont</th></tr></thead><tbody>
+  ${catScores}
+  <tr><td><strong>Átlag</strong></td><td><strong>${avg}</strong></td></tr>
+  </tbody></table>
+  ${a.note?`<p><strong>Megjegyzés:</strong> ${a.note}</p>`:''}
+  <script>window.print();<\/script></body></html>`);
+}
+
+// ============================================================
+// AUDIT - CARS
+// ============================================================
+function renderAuditsCar() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openCarAuditModal()">+ Új audit</button>
+  ${state.audit_car.length === 0 ? '<div class="empty"><div class="empty-icon">🔍</div><p>Nincsenek autó auditok</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Dátum</th><th>Autó</th><th>Km</th><th>Tisztaság</th><th>Rend</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${[...state.audit_car].sort((a,b)=>b.date.localeCompare(a.date)).map(a=>{
+      const prev = [...state.audit_car].filter(x=>x.carId===a.carId&&x.date<a.date).sort((x,y)=>y.date.localeCompare(x.date))[0];
+      const cleanAvg = ((Number(a.clean||0)+Number(a.order||0))/2).toFixed(1);
+      const prevAvg = prev ? ((Number(prev.clean||0)+Number(prev.order||0))/2).toFixed(1) : null;
+      const trend = prevAvg===null?'⚪':cleanAvg>prevAvg?'🟢':cleanAvg<prevAvg?'🔴':'⚪';
+      return `<tr>
+        <td>${formatDate(a.date)}</td>
+        <td>${state.cars.find(c=>c.id===a.carId)?.name||'—'}</td>
+        <td>${a.km||'—'}</td>
+        <td><span class="badge badge-${a.clean>=4?'green':a.clean>=3?'orange':'red'}">${a.clean||'—'}</span></td>
+        <td><span class="badge badge-${a.order>=4?'green':a.order>=3?'orange':'red'}">${a.order||'—'}</span></td>
+        <td>${trend}
+          <button class="btn btn-sm btn-secondary" style="margin-left:6px" onclick="openCarAuditModal('${a.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteAuditCar('${a.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openCarAuditModal(id) {
+  const a = id ? state.audit_car.find(x=>x.id===id) : { date:today() };
+  const carOpts = state.cars.map(c=>`<option value="${c.id}" ${a.carId===c.id?'selected':''}>${c.name}</option>`).join('');
+  const workerOpts = state.workers.map(w=>`<option value="${w.id}" ${(a.workers||[]).includes(w.id)?'selected':''}>${w.name}</option>`).join('');
+  openModal(id?'Autó audit szerkesztése':'Új autó audit', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Autó *</label>
+        <select class="form-control" id="ca-car">${carOpts}</select></div>
+      <div class="form-group"><label class="form-label">Dátum</label>
+        <input class="form-control" type="date" id="ca-date" value="${a.date||today()}"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Km állás</label>
+        <input class="form-control" type="number" id="ca-km" value="${a.km||''}"/></div>
+      <div class="form-group"><label class="form-label">Dolgozók</label>
+        <select class="form-control" id="ca-workers" multiple style="height:80px">${workerOpts}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="score-item">
+        <div class="score-label">🧼 Tisztaság (1–5)</div>
+        <div class="score-stars" id="score-clean">
+          ${[1,2,3,4,5].map(n=>`<button class="score-btn ${a.clean==n?'sel':''}" onclick="setScore2('clean',${n})">${n}</button>`).join('')}
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">📦 Rend (1–5)</div>
+        <div class="score-stars" id="score-order">
+          ${[1,2,3,4,5].map(n=>`<button class="score-btn ${a.order==n?'sel':''}" onclick="setScore2('order',${n})">${n}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label class="form-label">Megjegyzés</label>
+      <textarea class="form-control" id="ca-note">${a.note||''}</textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveCarAudit('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+  window._carScores = { clean: a.clean||'', order: a.order||'' };
+}
+
+function setScore2(key, val) {
+  if (!window._carScores) window._carScores = {};
+  window._carScores[key] = val;
+  document.querySelectorAll(`#score-${key} .score-btn`).forEach(b => {
+    b.classList.toggle('sel', Number(b.textContent)===val);
+  });
+}
+
+async function saveCarAudit(id) {
+  const carId = getVal('ca-car');
+  if (!carId) { toast('Válassz autót!', 'error'); return; }
+  const sel = set('ca-workers');
+  const workers = sel ? Array.from(sel.selectedOptions).map(o=>o.value) : [];
+  const a = { id:id||uid(), carId, date:getVal('ca-date'), km:getVal('ca-km'), workers, note:getVal('ca-note'), ...(window._carScores||{}) };
+  await save('audit_car', a);
+  closeModal(); toast('Autó audit mentve!'); renderAuditsCar();
+}
+
+async function deleteAuditCar(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('audit_car', id); toast('Törölve!'); renderAuditsCar();
+}
+
+// ============================================================
+// MACHINES
+// ============================================================
+function renderMachines() {
+  const content = set('content');
+  let html = `
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    <button class="btn btn-primary" onclick="openMachineModal()">+ Új gép</button>
+    <button class="btn btn-secondary" onclick="manageMachineLists()">⚙️ Típusok kezelése</button>
+  </div>
+  ${state.machines.length === 0 ? '<div class="empty"><div class="empty-icon">⚙️</div><p>Nincsenek gépek</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Név</th><th>Típus</th><th>Márka</th><th>Helyszín</th><th>Állapot</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${state.machines.map(m => `<tr>
+      <td><strong>${m.name}</strong></td>
+      <td>${m.type||'—'}</td>
+      <td>${m.brand||'—'}</td>
+      <td>${m.location||'—'}</td>
+      <td>${m.broken?'<span class="badge badge-red">⚠️ Hibás</span>':'<span class="badge badge-green">✅ OK</span>'}</td>
+      <td>
+        <button class="btn btn-sm btn-secondary" onclick="openMachineModal('${m.id}')">✏️</button>
+        <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteMachine('${m.id}')">🗑️</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openMachineModal(id) {
+  const m = id ? state.machines.find(x=>x.id===id) : {};
+  const types = state.settings.machineTypes || [];
+  const marks = state.settings.machineMarks || [];
+  openModal(id?'Gép szerkesztése':'Új gép', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Megnevezés *</label>
+        <input class="form-control" id="m-name" value="${m.name||''}" placeholder="Gép neve"/></div>
+      <div class="form-group"><label class="form-label">Típus</label>
+        <select class="form-control" id="m-type">
+          <option value="">—</option>
+          ${types.map(t=>`<option ${m.type===t?'selected':''}>${t}</option>`).join('')}
+        </select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Márka</label>
+        <select class="form-control" id="m-brand">
+          <option value="">—</option>
+          ${marks.map(t=>`<option ${m.brand===t?'selected':''}>${t}</option>`).join('')}
+        </select></div>
+      <div class="form-group"><label class="form-label">Helyszín</label>
+        <select class="form-control" id="m-location">
+          <option value="">—</option>
+          <option ${m.location==='kert'?'selected':''}>kert</option>
+          <option ${m.location==='telephely'?'selected':''}>telephely</option>
+          <option ${m.location==='szerviz'?'selected':''}>szerviz</option>
+          ${state.gardens.map(g=>`<option ${m.location===g.name?'selected':''}>${g.name}</option>`).join('')}
+        </select></div>
+    </div>
+    <label class="form-check"><input type="checkbox" id="m-broken" ${m.broken?'checked':''}/> Hibás</label>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveMachine('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveMachine(id) {
+  const name = getVal('m-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const m = { id:id||uid(), name, type:getVal('m-type'), brand:getVal('m-brand'), location:getVal('m-location'), broken:getVal('m-broken') };
+  await save('machines', m);
+  closeModal(); toast('Gép mentve!'); renderMachines();
+}
+
+async function deleteMachine(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('machines', id); toast('Törölve!'); renderMachines();
+}
+
+function manageMachineLists() {
+  openModal('Típusok és márkák kezelése', `
+    <div class="section-title">Típusok</div>
+    <div id="type-list">
+      ${(state.settings.machineTypes||[]).map((t,i)=>`<div style="display:flex;gap:8px;margin-bottom:6px">
+        <input class="form-control" value="${t}" oninput="state.settings.machineTypes[${i}]=this.value"/>
+        <button class="btn btn-sm btn-danger" onclick="state.settings.machineTypes.splice(${i},1);manageMachineLists()">✕</button>
+      </div>`).join('')}
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="state.settings.machineTypes.push('');manageMachineLists()">+ Típus</button>
+    <div class="section-title">Márkák</div>
+    <div>
+      ${(state.settings.machineMarks||[]).map((t,i)=>`<div style="display:flex;gap:8px;margin-bottom:6px">
+        <input class="form-control" value="${t}" oninput="state.settings.machineMarks[${i}]=this.value"/>
+        <button class="btn btn-sm btn-danger" onclick="state.settings.machineMarks.splice(${i},1);manageMachineLists()">✕</button>
+      </div>`).join('')}
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="state.settings.machineMarks.push('');manageMachineLists()">+ Márka</button>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveSettings().then(()=>{closeModal();toast('Mentve!')})">💾 Mentés</button>
+    </div>
+  `);
+}
+
+// ============================================================
+// TOOLS
+// ============================================================
+function renderTools() {
+  const content = set('content');
+  const byLocation = {};
+  state.tools.forEach(t => {
+    const loc = t.location || '—';
+    if (!byLocation[loc]) byLocation[loc] = [];
+    byLocation[loc].push(t);
+  });
+
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openToolModal()">+ Új eszköz</button>
+  ${state.tools.length === 0 ? '<div class="empty"><div class="empty-icon">🔧</div><p>Nincsenek eszközök</p></div>' :
+  Object.entries(byLocation).map(([loc, items]) => `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-blue">📍</div>
+        <div><div class="card-title">${loc}</div><div class="card-subtitle">${items.reduce((s,t)=>s+Number(t.qty||0),0)} db összesen</div></div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Eszköz</th><th>Darabszám</th><th>Műveletek</th></tr></thead>
+        <tbody>
+        ${items.map(t=>`<tr>
+          <td>${t.name}</td>
+          <td>${t.qty||0} db</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="openToolModal('${t.id}')">✏️</button>
+            <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteTool('${t.id}')">🗑️</button>
+          </td>
+        </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>`).join('')}`;
+  content.innerHTML = html;
+}
+
+function openToolModal(id) {
+  const t = id ? state.tools.find(x=>x.id===id) : {};
+  const locs = ['telephely', ...state.gardens.map(g=>g.name), 'szerviz'];
+  openModal(id?'Eszköz szerkesztése':'Új eszköz', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Gyűjtőnév *</label>
+        <input class="form-control" id="t-name" value="${t.name||''}" placeholder="pl. Gereblyék"/></div>
+      <div class="form-group"><label class="form-label">Darabszám</label>
+        <input class="form-control" type="number" id="t-qty" value="${t.qty||0}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Helyszín</label>
+      <select class="form-control" id="t-loc">
+        ${locs.map(l=>`<option ${t.location===l?'selected':''}>${l}</option>`).join('')}
+      </select></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveTool('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveTool(id) {
+  const name = getVal('t-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const t = { id:id||uid(), name, qty:getVal('t-qty'), location:getVal('t-loc') };
+  await save('tools', t);
+  closeModal(); toast('Eszköz mentve!'); renderTools();
+}
+
+async function deleteTool(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('tools', id); toast('Törölve!'); renderTools();
+}
+
+// ============================================================
+// CONSUMABLES
+// ============================================================
+function renderConsumables() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openConsumableModal()">+ Új fogyóeszköz</button>
+  ${state.consumables.length === 0 ? '<div class="empty"><div class="empty-icon">📦</div><p>Nincsenek fogyóeszközök</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Név</th><th>Készlet</th><th>Min.</th><th>Állapot</th><th>Gyors módosítás</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${state.consumables.map(c => {
+      const warn = c.qty < 0 ? 'danger' : c.qty <= c.min ? 'warning' : 'ok';
+      return `<tr>
+        <td><strong>${c.name}</strong></td>
+        <td style="font-weight:700;color:${c.qty<0?'var(--red)':c.qty<=c.min?'var(--orange)':'var(--text)'}">${c.qty}</td>
+        <td>${c.min}</td>
+        <td>${warn==='danger'?'<span class="badge badge-red">❌ Negatív</span>':warn==='warning'?'<span class="badge badge-orange">⚠️ Alacsony</span>':'<span class="badge badge-green">✅ OK</span>'}</td>
+        <td>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="adjustConsumable('${c.id}',-1)">−</button>
+            <span class="qty-display">${c.qty}</span>
+            <button class="qty-btn" onclick="adjustConsumable('${c.id}',1)">+</button>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="openConsumableModal('${c.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteConsumable('${c.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openConsumableModal(id) {
+  const c = id ? state.consumables.find(x=>x.id===id) : {};
+  openModal(id?'Fogyóeszköz szerkesztése':'Új fogyóeszköz', `
+    <div class="form-group"><label class="form-label">Neve *</label>
+      <input class="form-control" id="cs-name" value="${c.name||''}" placeholder="Eszköz neve"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Készlet</label>
+        <input class="form-control" type="number" id="cs-qty" value="${c.qty||0}"/></div>
+      <div class="form-group"><label class="form-label">Minimum készlet</label>
+        <input class="form-control" type="number" id="cs-min" value="${c.min||0}"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveConsumable('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveConsumable(id) {
+  const name = getVal('cs-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const c = { id:id||uid(), name, qty:Number(getVal('cs-qty')), min:Number(getVal('cs-min')) };
+  await save('consumables', c);
+  closeModal(); toast('Mentve!'); renderConsumables();
+}
+
+async function adjustConsumable(id, delta) {
+  const c = state.consumables.find(x=>x.id===id);
+  if (!c) return;
+  c.qty = Number(c.qty) + delta;
+  await save('consumables', c);
+  renderConsumables();
+}
+
+async function deleteConsumable(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('consumables', id); toast('Törölve!'); renderConsumables();
+}
+
+// ============================================================
+// IRRIGATION STOCK
+// ============================================================
+function renderIrrigationStock() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openIrrStockModal()">+ Új anyag</button>
+  ${state.irrigation_stock.length === 0 ? '<div class="empty"><div class="empty-icon">💧</div><p>Nincsenek tételek</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Anyag</th><th>Kategória</th><th>Egység</th><th>Készlet</th><th>Min.</th><th>Állapot</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${state.irrigation_stock.map(s => {
+      const warn = s.qty <= s.min;
+      return `<tr>
+        <td><strong>${s.name}</strong></td>
+        <td><span class="badge badge-blue">${s.category||'—'}</span></td>
+        <td>${s.unit||'db'}</td>
+        <td style="color:${warn?'var(--orange)':'var(--text)'}"><strong>${s.qty}</strong></td>
+        <td>${s.min}</td>
+        <td>${warn?'<span class="badge badge-orange">⚠️ Alacsony</span>':'<span class="badge badge-green">✅ OK</span>'}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="openIrrStockModal('${s.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteIrrStock('${s.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openIrrStockModal(id) {
+  const s = id ? state.irrigation_stock.find(x=>x.id===id) : {};
+  const cats = ['16mm','20mm','25mm','32mm','50mm','Sprinkler','Dripper','Szóró','Egyéb'];
+  openModal(id?'Anyag szerkesztése':'Új öntözés anyag', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Neve *</label>
+        <input class="form-control" id="is-name" value="${s.name||''}" placeholder="Anyag neve"/></div>
+      <div class="form-group"><label class="form-label">Kategória</label>
+        <select class="form-control" id="is-cat">
+          ${cats.map(c=>`<option ${s.category===c?'selected':''}>${c}</option>`).join('')}
+        </select></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Mennyiség</label>
+        <input class="form-control" type="number" id="is-qty" value="${s.qty||0}"/></div>
+      <div class="form-group"><label class="form-label">Minimum</label>
+        <input class="form-control" type="number" id="is-min" value="${s.min||0}"/></div>
+      <div class="form-group"><label class="form-label">Egység</label>
+        <select class="form-control" id="is-unit">
+          <option ${s.unit==='db'?'selected':''}>db</option>
+          <option ${s.unit==='m'?'selected':''}>m</option>
+        </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveIrrStock('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveIrrStock(id) {
+  const name = getVal('is-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const s = { id:id||uid(), name, category:getVal('is-cat'), qty:Number(getVal('is-qty')), min:Number(getVal('is-min')), unit:getVal('is-unit') };
+  await save('irrigation_stock', s);
+  closeModal(); toast('Mentve!'); renderIrrigationStock();
+}
+
+async function deleteIrrStock(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('irrigation_stock', id); toast('Törölve!'); renderIrrigationStock();
+}
+
+// ============================================================
+// WORKSHEETS - IRRIGATION
+// ============================================================
+function renderWorksheetsIrrigation() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openIrrigWS()">+ Új munkalap</button>
+  ${state.worksheets_irrigation.length === 0 ? '<div class="empty"><div class="empty-icon">🚿</div><p>Nincsenek munkalapok</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Dátum</th><th>Kert</th><th>Munkaóra</th><th>Megjegyzés</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${[...state.worksheets_irrigation].sort((a,b)=>b.date.localeCompare(a.date)).map(w=>`<tr>
+      <td>${formatDate(w.date)}</td>
+      <td>${getGardenName(w.gardenId)}</td>
+      <td>${w.hours||0} ó</td>
+      <td>${w.note||'—'}</td>
+      <td>
+        <button class="btn btn-sm btn-secondary" onclick="openIrrigWS('${w.id}')">✏️</button>
+        <button class="btn btn-sm btn-secondary" style="margin-left:4px" onclick="printWS('${w.id}')">🖨️</button>
+        <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteIrrigWS('${w.id}')">🗑️</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openIrrigWS(id) {
+  const w = id ? state.worksheets_irrigation.find(x=>x.id===id) : { date:today(), materials:[] };
+  if (!w.materials) w.materials = [];
+  const gardenOpts = state.gardens.map(g=>`<option value="${g.id}" ${w.gardenId===g.id?'selected':''}>${g.name}</option>`).join('');
+  const workerOpts = state.workers.map(x=>`<option value="${x.id}" ${(w.workers||[]).includes(x.id)?'selected':''}>${x.name}</option>`).join('');
+  window._wsMaterials = JSON.parse(JSON.stringify(w.materials));
+
+  openModal(id?'Munkalap szerkesztése':'Új öntözés munkalap', `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kert *</label>
+        <select class="form-control" id="iw-garden">${gardenOpts}</select></div>
+      <div class="form-group"><label class="form-label">Dátum</label>
+        <input class="form-control" type="date" id="iw-date" value="${w.date||today()}"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Dolgozók</label>
+        <select class="form-control" id="iw-workers" multiple style="height:80px">${workerOpts}</select></div>
+      <div class="form-group"><label class="form-label">Munkaóra</label>
+        <input class="form-control" type="number" id="iw-hours" value="${w.hours||0}"/></div>
+    </div>
+    <div class="section-title">🔧 Felhasznált anyagok <button class="btn btn-sm btn-secondary" style="margin-left:10px" onclick="addWSMaterial()">+ Anyag</button></div>
+    <div id="ws-mat-list">
+      ${w.materials.map((m,i)=>wsMaterialRow(m,i)).join('')}
+    </div>
+    <div class="form-group" style="margin-top:12px"><label class="form-label">Megjegyzés</label>
+      <textarea class="form-control" id="iw-note">${w.note||''}</textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveIrrigWS('${id||''}')">💾 Mentés</button>
+    </div>
+  `, true);
+}
+
+function wsMaterialRow(m={}, i) {
+  const stockOpts = state.irrigation_stock.map(s=>`<option value="${s.id}" ${m.stockId===s.id?'selected':''}>${s.name} (${s.qty} ${s.unit||'db'})</option>`).join('');
+  const avail = m.stockId ? state.irrigation_stock.find(s=>s.id===m.stockId) : null;
+  const warn = avail && Number(m.qty) > Number(avail.qty);
+  return `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px" id="wsm-${i}">
+    <select class="form-control" style="flex:2" onchange="updateWSMat(${i},'stockId',this.value)">
+      <option value="">— Anyag kiválasztása —</option>
+      ${stockOpts}
+    </select>
+    <input class="form-control" style="width:80px" type="number" placeholder="Menny." value="${m.qty||''}" oninput="updateWSMat(${i},'qty',this.value)"/>
+    ${warn?'<span style="color:var(--orange)">⭐</span>':''}
+    <button class="btn btn-sm btn-danger" onclick="removeWSMat(${i})">✕</button>
+  </div>`;
+}
+
+function addWSMaterial() {
+  window._wsMaterials.push({ stockId:'', qty:0 });
+  const i = window._wsMaterials.length - 1;
+  const list = set('ws-mat-list');
+  const div = document.createElement('div');
+  div.innerHTML = wsMaterialRow({}, i);
+  list.appendChild(div.firstElementChild);
+}
+
+function updateWSMat(i, key, val) { if (window._wsMaterials[i]) window._wsMaterials[i][key] = val; }
+function removeWSMat(i) { window._wsMaterials.splice(i,1); const el = document.getElementById(`wsm-${i}`); if (el) el.remove(); }
+
+async function saveIrrigWS(id) {
+  const gardenId = getVal('iw-garden');
+  if (!gardenId) { toast('Válassz kertet!', 'error'); return; }
+  const sel = set('iw-workers');
+  const workers = sel ? Array.from(sel.selectedOptions).map(o=>o.value) : [];
+
+  // Deduct stock
+  for (const m of (window._wsMaterials||[])) {
+    if (!m.stockId || !m.qty) continue;
+    const stock = state.irrigation_stock.find(s=>s.id===m.stockId);
+    if (stock) {
+      stock.qty = Number(stock.qty) - Number(m.qty);
+      await save('irrigation_stock', stock);
+    }
+  }
+
+  const w = { id:id||uid(), gardenId, date:getVal('iw-date'), workers, hours:getVal('iw-hours'), note:getVal('iw-note'), materials:window._wsMaterials||[] };
+  await save('worksheets_irrigation', w);
+  closeModal(); toast('Munkalap mentve!'); renderWorksheetsIrrigation();
+}
+
+async function deleteIrrigWS(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('worksheets_irrigation', id); toast('Törölve!'); renderWorksheetsIrrigation();
+}
+
+function printWS(id) {
+  const w = state.worksheets_irrigation.find(x=>x.id===id);
+  if (!w) return;
+  const mats = (w.materials||[]).map(m => {
+    const s = state.irrigation_stock.find(x=>x.id===m.stockId);
+    return `<tr><td>${s?s.name:'—'}</td><td>${m.qty} ${s?.unit||'db'}</td></tr>`;
+  }).join('');
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Munkalap</title>
+  <style>body{font-family:sans-serif;padding:24px}h1{color:#2e7d32}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px}th{background:#e8f5e9}</style></head><body>
+  <h1>Öntözés Munkalap</h1>
+  <p>Kert: <strong>${getGardenName(w.gardenId)}</strong> | Dátum: <strong>${formatDate(w.date)}</strong> | Munkaóra: <strong>${w.hours||0} ó</strong></p>
+  <h3>Felhasznált anyagok</h3>
+  <table><thead><tr><th>Anyag</th><th>Mennyiség</th></tr></thead><tbody>${mats}</tbody></table>
+  ${w.note?`<p><strong>Megjegyzés:</strong> ${w.note}</p>`:''}
+  <script>window.print();<\/script></body></html>`);
+}
+
+// ============================================================
+// WORKSHEETS - OTHER
+// ============================================================
+function renderWorksheetsOther() {
+  const content = set('content');
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openOtherWS()">+ Új munkalap</button>
+  ${state.worksheets_other.length === 0 ? '<div class="empty"><div class="empty-icon">📝</div><p>Nincsenek munkalapok</p></div>' :
+  `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Feladat</th><th>Kert</th><th>Dátum</th><th>Megjegyzés</th><th>Műveletek</th></tr></thead>
+    <tbody>
+    ${[...state.worksheets_other].sort((a,b)=>b.date.localeCompare(a.date)).map(w=>`<tr>
+      <td>${w.task||'—'}</td>
+      <td>${getGardenName(w.gardenId)}</td>
+      <td>${formatDate(w.date)}</td>
+      <td>${w.note||'—'}</td>
+      <td>
+        <button class="btn btn-sm btn-secondary" onclick="openOtherWS('${w.id}')">✏️</button>
+        <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteOtherWS('${w.id}')">🗑️</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`}`;
+  content.innerHTML = html;
+}
+
+function openOtherWS(id) {
+  const w = id ? state.worksheets_other.find(x=>x.id===id) : { date:today() };
+  const gardenOpts = state.gardens.map(g=>`<option value="${g.id}" ${w.gardenId===g.id?'selected':''}>${g.name}</option>`).join('');
+  const workerOpts = state.workers.map(x=>`<option value="${x.id}" ${(w.workers||[]).includes(x.id)?'selected':''}>${x.name}</option>`).join('');
+  openModal(id?'Munkalap szerkesztése':'Új munkalap', `
+    <div class="form-group"><label class="form-label">Feladat neve *</label>
+      <input class="form-control" id="ow-task" value="${w.task||''}" placeholder="Feladat neve"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kert</label>
+        <select class="form-control" id="ow-garden"><option value="">—</option>${gardenOpts}</select></div>
+      <div class="form-group"><label class="form-label">Dátum</label>
+        <input class="form-control" type="date" id="ow-date" value="${w.date||today()}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Dolgozók</label>
+      <select class="form-control" id="ow-workers" multiple style="height:80px">${workerOpts}</select></div>
+    <div class="form-group"><label class="form-label">Megjegyzés</label>
+      <textarea class="form-control" id="ow-note">${w.note||''}</textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveOtherWS('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveOtherWS(id) {
+  const task = getVal('ow-task').trim();
+  if (!task) { toast('A feladat neve kötelező!', 'error'); return; }
+  const sel = set('ow-workers');
+  const workers = sel ? Array.from(sel.selectedOptions).map(o=>o.value) : [];
+  const w = { id:id||uid(), task, gardenId:getVal('ow-garden'), date:getVal('ow-date'), workers, note:getVal('ow-note') };
+  await save('worksheets_other', w);
+  closeModal(); toast('Munkalap mentve!'); renderWorksheetsOther();
+}
+
+async function deleteOtherWS(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('worksheets_other', id); toast('Törölve!'); renderWorksheetsOther();
+}
+
+// ============================================================
+// TASKS
+// ============================================================
+function renderTasks() {
+  const content = set('content');
+  const sorted = [...state.tasks].sort((a,b) => {
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    return a.deadline.localeCompare(b.deadline);
+  });
+
+  let html = `<button class="btn btn-primary" style="margin-bottom:16px" onclick="openTaskModal()">+ Új feladat</button>
+  ${sorted.length === 0 ? '<div class="empty"><div class="empty-icon">✅</div><p>Nincsenek feladatok</p></div>' :
+  `<div style="display:flex;flex-direction:column;gap:10px">
+  ${sorted.map(t => {
+    const d = t.deadline ? daysDiff(t.deadline) : null;
+    const cls = d === null ? 'gray' : d < 0 ? 'red' : d === 0 ? 'orange' : d <= 7 ? 'green' : 'gray';
+    const label = d === null ? '' : d < 0 ? `${Math.abs(d)} napja lejárt` : d === 0 ? 'Ma esedékes' : `${d} nap múlva`;
+    return `<div class="card" style="border-left:3px solid var(--${cls==='gray'?'muted':cls})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:15px">${t.name}</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:4px">
+            ${t.location?`📍 ${t.location} • `:''}
+            ${t.repeat?`🔁 ${t.repeat} • `:''}
+            ${t.deadline?`📅 ${formatDate(t.deadline)}`:''}
+          </div>
+        </div>
+        ${label?`<span class="badge badge-${cls}">${label}</span>`:''}
+        <button class="btn btn-sm btn-secondary" onclick="openTaskModal('${t.id}')">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('')}
+  </div>`}`;
+  content.innerHTML = html;
+}
+
+function openTaskModal(id) {
+  const t = id ? state.tasks.find(x=>x.id===id) : {};
+  openModal(id?'Feladat szerkesztése':'Új feladat', `
+    <div class="form-group"><label class="form-label">Feladat neve *</label>
+      <input class="form-control" id="tk-name" value="${t.name||''}" placeholder="Feladat neve"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Helyszín</label>
+        <input class="form-control" id="tk-loc" value="${t.location||''}" placeholder="Helyszín"/></div>
+      <div class="form-group"><label class="form-label">Határidő</label>
+        <input class="form-control" type="date" id="tk-deadline" value="${t.deadline||''}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Ismétlődés</label>
+      <select class="form-control" id="tk-repeat">
+        <option value="">Nincs</option>
+        <option value="heti" ${t.repeat==='heti'?'selected':''}>Heti</option>
+        <option value="havi" ${t.repeat==='havi'?'selected':''}>Havi</option>
+        <option value="eves" ${t.repeat==='eves'?'selected':''}>Éves</option>
+      </select></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Mégse</button>
+      <button class="btn btn-primary" onclick="saveTask('${id||''}')">💾 Mentés</button>
+    </div>
+  `);
+}
+
+async function saveTask(id) {
+  const name = getVal('tk-name').trim();
+  if (!name) { toast('A név kötelező!', 'error'); return; }
+  const t = { id:id||uid(), name, location:getVal('tk-loc'), deadline:getVal('tk-deadline'), repeat:getVal('tk-repeat') };
+  await save('tasks', t);
+  closeModal(); toast('Feladat mentve!'); renderTasks();
+}
+
+async function deleteTask(id) {
+  if (!confirm('Biztosan törlöd?')) return;
+  await remove('tasks', id); toast('Törölve!'); renderTasks();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  // Register SW
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+
+  await initDB();
+  await loadAll();
+
+  // Date display
+  const now = new Date();
+  const days = ['vasárnap','hétfő','kedd','szerda','csütörtök','péntek','szombat'];
+  const months = ['január','február','március','április','május','június','július','augusztus','szeptember','október','november','december'];
+  set('current-date-display').textContent = `${now.getFullYear()}. ${months[now.getMonth()]} ${now.getDate()}., ${days[now.getDay()]}`;
+
+  updateBadges();
+  navigate('dashboard');
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+init();
+</script>
+</body>
+</html>
